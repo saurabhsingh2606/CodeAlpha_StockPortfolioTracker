@@ -1,106 +1,110 @@
 # ============================================================
 #  TASK 2 — Stock Portfolio Tracker
 #  CodeAlpha Python Programming Internship
+#  Author : Saurabh Singh Tanwar
+#  Date   : June 2025
 # ============================================================
 
-# --- datetime = date aur time ke liye ---
+# datetime module — used to get current date and time
 from datetime import datetime
 
 # ============================================================
 #  HARDCODED STOCK PRICES (Dictionary)
-#  Key   = Stock Symbol
-#  Value = Price in Rupees (₹)
+#  Key   = Stock Symbol (e.g. "TCS")
+#  Value = Price per share in Rupees (₹)
 # ============================================================
 STOCK_PRICES = {
-    # 🇮🇳 Indian Stocks
+    # --- Indian Stocks ---
     "RELIANCE" : 2950.00,
     "TCS"      : 3800.00,
     "INFOSYS"  : 1500.00,
     "HDFC"     : 1600.00,
-    "WIPRO"    : 480.00,
-    "TATASTEEL": 165.00,
-    "ONGC"     : 270.00,
-    "SBIN"     : 820.00,
+    "WIPRO"    :  480.00,
+    "TATASTEEL":  165.00,
+    "ONGC"     :  270.00,
+    "SBIN"     :  820.00,
     "BAJAJ"    : 7200.00,
     "AIRTEL"   : 1750.00,
 
-    # 🇺🇸 US Stocks
-    "AAPL"  : 18500.00,   # Apple
-    "TSLA"  : 20800.00,   # Tesla
-    "GOOGLE": 14200.00,   # Google
-    "AMAZON": 16500.00,   # Amazon
-    "META"  : 50000.00,   # Meta (Facebook)
+    # --- US Stocks ---
+    "AAPL"  : 18500.00,   # Apple Inc.
+    "TSLA"  : 20800.00,   # Tesla Inc.
+    "GOOGLE": 14200.00,   # Alphabet Inc.
+    "AMAZON": 16500.00,   # Amazon.com Inc.
+    "META"  : 50000.00,   # Meta Platforms Inc.
 }
 
-# Portfolio = User ne jo stocks kharide hain unki list
-# Yeh ek list of dictionaries hai
-# Har item mein: stock naam, quantity, buy price
+# Portfolio list — stores all stocks the user has purchased
+# Each entry is a dictionary with: symbol, quantity, buy_price, total
 portfolio = []
 
 
 # ============================================================
-# FUNCTION 1 — Available stocks dikhao
+# FUNCTION 1 — Display all available stocks
 # ============================================================
 def show_available_stocks():
-    """Sabhi available stocks aur unki prices dikhao."""
+    """Display all available stocks with their current prices."""
 
     print("\n" + "=" * 55)
     print("   📈  AVAILABLE STOCKS")
     print("=" * 55)
-    print(f"   {'SYMBOL':<12} {'COMPANY / STOCK':<20} {'PRICE (₹)':>10}")
+    print(f"   {'SYMBOL':<12} {'TYPE':<20} {'PRICE (INR)':>10}")
     print("-" * 55)
 
-    # Dictionary ke har item ko ek ek karke print karo
-    # .items() = key aur value dono ek saath do
+    # Loop through every key-value pair in the dictionary
     for symbol, price in STOCK_PRICES.items():
-        print(f"   {symbol:<12} {'':20} {price:>10,.2f}")
+
+        # Determine if stock is Indian or US based on symbol
+        stock_type = "US Stock" if symbol in ["AAPL", "TSLA", "GOOGLE", "AMAZON", "META"] else "Indian Stock"
+
+        print(f"   {symbol:<12} {stock_type:<20} {price:>10,.2f}")
 
     print("=" * 55)
 
 
 # ============================================================
-# FUNCTION 2 — Stock kharido (portfolio mein add karo)
+# FUNCTION 2 — Buy a stock and add it to the portfolio
 # ============================================================
 def buy_stock():
-    """User se stock symbol aur quantity lo — portfolio mein add karo."""
+    """Allow the user to purchase a stock by entering symbol and quantity."""
 
-    print("\n📊 STOCK KHARIDO")
+    print("\n📊 BUY STOCK")
     print("-" * 40)
 
-    # Stock symbol lo — uppercase mein convert karo
-    # .upper() = "tcs" → "TCS"
-    symbol = input("   Stock symbol daalo (e.g. TCS, AAPL): ").strip().upper()
+    # Get stock symbol from user — convert to uppercase for consistency
+    # .upper() ensures "tcs" and "TCS" are treated the same
+    symbol = input("   Enter stock symbol (e.g. TCS, AAPL): ").strip().upper()
 
-    # Check karo yeh stock available hai ya nahi
-    # 'in' operator = dictionary mein key exist karti hai?
+    # Check if the entered symbol exists in our stock dictionary
+    # 'in' operator checks if a key exists in a dictionary
     if symbol not in STOCK_PRICES:
-        print(f"\n   ❌ '{symbol}' stock nahi mila!")
-        print("   💡 Upar available stocks ki list dekho.")
+        print(f"\n   ❌ Stock '{symbol}' not found!")
+        print("   💡 Please refer to the available stocks list.")
         return
 
-    # Quantity lo
+    # Get the number of shares to purchase
     try:
-        # int() = string ko number mein convert karo
-        quantity = int(input(f"   Kitne shares khareedne hain: "))
+        quantity = int(input(f"   Enter number of shares to buy: "))
 
+        # Validate that quantity is a positive number
         if quantity <= 0:
-            print("   ❌ Quantity 1 ya usse zyada honi chahiye!")
+            print("   ❌ Quantity must be 1 or more!")
             return
 
     except ValueError:
-        # Agar user ne number ke bajaye kuch aur daala
-        print("   ❌ Sirf number daalo!")
+        # Handles the case where user enters letters instead of a number
+        print("   ❌ Please enter a valid number!")
         return
 
-    # Stock ka current price nikalo dictionary se
+    # Fetch the current price of the selected stock from the dictionary
     buy_price = STOCK_PRICES[symbol]
 
-    # Total cost calculate karo
-    # Simple arithmetic: quantity × price = total
+    # Calculate total investment for this purchase
+    # Formula: Total = Quantity × Price per share
     total_cost = quantity * buy_price
 
-    # Portfolio mein add karo
-    # Ek dictionary banao is stock ke liye aur list mein append karo
+    # Add this stock entry to the portfolio list
+    # Each stock is stored as a dictionary (key-value pairs)
     portfolio.append({
         "symbol"   : symbol,
         "quantity" : quantity,
@@ -108,32 +112,33 @@ def buy_stock():
         "total"    : total_cost
     })
 
-    print(f"\n   ✅ {quantity} shares of {symbol} khareed liye!")
+    print(f"\n   ✅ Successfully purchased {quantity} share(s) of {symbol}!")
     print(f"   💰 Price per share : ₹{buy_price:,.2f}")
     print(f"   💸 Total cost      : ₹{total_cost:,.2f}")
 
 
 # ============================================================
-# FUNCTION 3 — Portfolio dikhao
+# FUNCTION 3 — Display the user's full portfolio
 # ============================================================
 def show_portfolio():
-    """User ka poora portfolio sundar format mein dikhao."""
+    """Display all stocks in the portfolio in a formatted table."""
 
-    # Agar portfolio khali hai
+    # Check if the portfolio has any entries
     if len(portfolio) == 0:
-        print("\n   ❌ Portfolio khali hai! Pehle kuch stocks kharido.")
+        print("\n   ❌ Your portfolio is empty! Please purchase some stocks first.")
         return
 
     print("\n" + "=" * 65)
-    print("   💼  MERA PORTFOLIO")
+    print("   💼  MY PORTFOLIO")
     print("=" * 65)
     print(f"   {'#':<4} {'SYMBOL':<12} {'QTY':>6} {'PRICE (₹)':>12} {'TOTAL (₹)':>14}")
     print("-" * 65)
 
-    # Grand total calculate karne ke liye
+    # Variable to accumulate the total investment value
     grand_total = 0
 
-    # enumerate() = number ke saath list ke items do
+    # enumerate() gives both the index number and the item
+    # start=1 means numbering begins from 1 (not 0)
     for i, stock in enumerate(portfolio, start=1):
         print(
             f"   {i:<4}"
@@ -142,7 +147,7 @@ def show_portfolio():
             f" {stock['buy_price']:>12,.2f}"
             f" {stock['total']:>14,.2f}"
         )
-        # Har stock ka total grand total mein jodhte jao
+        # Add each stock's total to the grand total
         grand_total += stock["total"]
 
     print("=" * 65)
@@ -153,13 +158,13 @@ def show_portfolio():
 
 
 # ============================================================
-# FUNCTION 4 — Current value aur profit/loss dikhao
+# FUNCTION 4 — Calculate and display profit/loss
 # ============================================================
 def show_profit_loss():
-    """Portfolio ki current value aur profit/loss calculate karo."""
+    """Calculate and display profit or loss for each stock and overall."""
 
     if len(portfolio) == 0:
-        print("\n   ❌ Portfolio khali hai!")
+        print("\n   ❌ Your portfolio is empty!")
         return
 
     print("\n" + "=" * 70)
@@ -170,10 +175,11 @@ def show_profit_loss():
         f"{'QTY':>6}"
         f"{'BUY PRICE':>12}"
         f"{'CURR PRICE':>12}"
-        f"{'P/L (₹)':>12}"
+        f"{'P/L (₹)':>14}"
     )
     print("-" * 70)
 
+    # Variables to track overall investment and current value
     total_invested    = 0
     total_current_val = 0
 
@@ -182,144 +188,153 @@ def show_profit_loss():
         qty       = stock["quantity"]
         buy_price = stock["buy_price"]
 
-        # Current price dictionary se lo
+        # Get the current price of the stock from the dictionary
         curr_price = STOCK_PRICES[symbol]
 
-        # Profit/Loss = (current price - buy price) × quantity
+        # Profit/Loss formula:
+        # P/L = (Current Price - Buy Price) × Quantity
         pnl = (curr_price - buy_price) * qty
 
-        # Totals update karo
+        # Update totals
         total_invested    += buy_price * qty
         total_current_val += curr_price * qty
 
-        # + ya - sign ke saath dikhao
-        pnl_str = f"+₹{pnl:,.2f}" if pnl >= 0 else f"-₹{abs(pnl):,.2f}"
+        # Format P/L with + or - sign for clarity
+        pnl_display = f"+₹{pnl:,.2f}" if pnl >= 0 else f"-₹{abs(pnl):,.2f}"
 
         print(
             f"   {symbol:<12}"
             f"{qty:>6}"
             f"{buy_price:>12,.2f}"
             f"{curr_price:>12,.2f}"
-            f"{pnl_str:>12}"
+            f"{pnl_display:>14}"
         )
 
-    # Overall P/L
+    # Calculate overall profit/loss
     overall_pnl = total_current_val - total_invested
+
+    # Percentage gain/loss formula:
+    # % = (Overall P/L / Total Invested) × 100
     overall_pct = (overall_pnl / total_invested) * 100 if total_invested > 0 else 0
 
     print("=" * 70)
     print(f"   Total Invested     : ₹{total_invested:,.2f}")
     print(f"   Current Value      : ₹{total_current_val:,.2f}")
 
-    # Agar profit hua
     if overall_pnl >= 0:
-        print(f"   Overall P/L        : +₹{overall_pnl:,.2f} (+{overall_pct:.2f}%) 📈")
+        print(f"   Overall P/L        : +₹{overall_pnl:,.2f} (+{overall_pct:.2f}%) 📈 PROFIT")
     else:
-        print(f"   Overall P/L        : -₹{abs(overall_pnl):,.2f} ({overall_pct:.2f}%) 📉")
+        print(f"   Overall P/L        : -₹{abs(overall_pnl):,.2f} ({overall_pct:.2f}%) 📉 LOSS")
 
     print("=" * 70)
 
 
 # ============================================================
-# FUNCTION 5 — Portfolio file mein save karo
+# FUNCTION 5 — Save portfolio report to a .txt file
 # ============================================================
 def save_portfolio():
-    """Portfolio ko .txt file mein save karo."""
+    """Save the current portfolio details to a .txt file."""
 
     if len(portfolio) == 0:
-        print("\n   ❌ Portfolio khali hai — save karne ke liye kuch nahi!")
+        print("\n   ❌ Portfolio is empty — nothing to save!")
         return
 
-    # File ka naam — current date aur time ke saath
+    # Create a unique filename using current timestamp
+    # strftime() formats date and time as a string
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
     filename  = f"portfolio_{timestamp}.txt"
 
-    # Grand total calculate karo
+    # Calculate grand total using sum() with a generator expression
     grand_total = sum(stock["total"] for stock in portfolio)
 
-    # "w" mode = write — naya file banao
+    # Open file in write mode ("w")
+    # "w" creates a new file, or overwrites if it already exists
     with open(filename, "w") as file:
 
         file.write("=" * 55 + "\n")
         file.write("   STOCK PORTFOLIO REPORT\n")
         file.write("   CodeAlpha Python Internship — Task 2\n")
-        file.write(f"   Generated: {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}\n")
+        file.write(f"   Generated on: {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}\n")
         file.write("=" * 55 + "\n\n")
 
-        file.write(f"{'#':<4} {'SYMBOL':<12} {'QTY':>6} {'PRICE':>12} {'TOTAL':>14}\n")
+        file.write(f"{'#':<4} {'SYMBOL':<12} {'QTY':>6} {'PRICE (INR)':>14} {'TOTAL (INR)':>14}\n")
         file.write("-" * 55 + "\n")
 
+        # Write each stock entry to the file
         for i, stock in enumerate(portfolio, start=1):
             file.write(
                 f"{i:<4}"
                 f"{stock['symbol']:<12}"
                 f"{stock['quantity']:>6}"
-                f"{stock['buy_price']:>12,.2f}"
+                f"{stock['buy_price']:>14,.2f}"
                 f"{stock['total']:>14,.2f}\n"
             )
 
         file.write("=" * 55 + "\n")
-        file.write(f"{'TOTAL INVESTMENT':>36} ₹{grand_total:>12,.2f}\n")
+        file.write(f"{'TOTAL INVESTMENT':>38} ₹{grand_total:>12,.2f}\n")
         file.write("=" * 55 + "\n")
 
-    print(f"\n   ✅ Portfolio saved ho gaya: '{filename}'")
+    print(f"\n   ✅ Portfolio saved successfully: '{filename}'")
 
 
 # ============================================================
-# FUNCTION 6 — Stock hataao portfolio se
+# FUNCTION 6 — Remove a stock from the portfolio
 # ============================================================
 def remove_stock():
-    """Portfolio se koi stock hatao."""
+    """Remove a selected stock entry from the portfolio."""
 
     if len(portfolio) == 0:
-        print("\n   ❌ Portfolio pehle se khali hai!")
+        print("\n   ❌ Portfolio is already empty!")
         return
 
+    # Display current portfolio so user can choose which to remove
     show_portfolio()
 
     try:
-        choice = int(input("\n   Kaun sa stock hatana hai? (Number daalo): "))
+        choice = int(input("\n   Enter the number of the stock to remove: "))
 
-        # Valid number hai?
+        # Validate the choice is within the valid range
         if choice < 1 or choice > len(portfolio):
-            print("   ❌ Galat number!")
+            print("   ❌ Invalid choice! Please enter a valid number.")
             return
 
-        # List se remove karo
-        # choice-1 kyunki list 0 se start hoti hai
+        # Remove the selected entry from the list
+        # choice - 1 because list index starts from 0, but we displayed from 1
         removed = portfolio.pop(choice - 1)
-        print(f"\n   ✅ {removed['symbol']} portfolio se hata diya!")
+        print(f"\n   ✅ {removed['symbol']} has been removed from your portfolio!")
 
     except ValueError:
-        print("   ❌ Sirf number daalo!")
+        print("   ❌ Please enter a valid number!")
 
 
 # ============================================================
-# MAIN FUNCTION — Menu System
+# MAIN FUNCTION — Menu-driven interface
 # ============================================================
 def main():
+    """Main function — displays menu and handles user choices."""
 
     print("\n" + "=" * 55)
     print("   📈  STOCK PORTFOLIO TRACKER")
     print("   CodeAlpha Python Internship — Task 2")
+    print("   Author: Saurabh Singh Tanwar")
     print("=" * 55)
 
+    # Infinite loop — keeps the menu running until user exits
     while True:
 
-        # Menu dikhao
         print("\n   ┌─────────────────────────────────┐")
-        print("   │         MAIN MENU               │")
+        print("   │           MAIN MENU             │")
         print("   ├─────────────────────────────────┤")
-        print("   │  1 → Available Stocks Dekho     │")
-        print("   │  2 → Stock Kharido              │")
-        print("   │  3 → Mera Portfolio Dekho       │")
-        print("   │  4 → Profit / Loss Dekho        │")
-        print("   │  5 → Stock Hatao                │")
-        print("   │  6 → Portfolio Save Karo (.txt) │")
+        print("   │  1 → View Available Stocks      │")
+        print("   │  2 → Buy a Stock                │")
+        print("   │  3 → View My Portfolio          │")
+        print("   │  4 → View Profit / Loss         │")
+        print("   │  5 → Remove a Stock             │")
+        print("   │  6 → Save Portfolio to File     │")
         print("   │  7 → Exit                       │")
         print("   └─────────────────────────────────┘")
 
-        choice = input("\n   Apna choice daalo (1-7): ").strip()
+        choice = input("\n   Enter your choice (1-7): ").strip()
 
         if choice == "1":
             show_available_stocks()
@@ -340,13 +355,15 @@ def main():
             save_portfolio()
 
         elif choice == "7":
-            print("\n   👋 Portfolio Tracker band ho raha hai. Bye!\n")
+            print("\n   👋 Thank you for using Stock Portfolio Tracker. Goodbye!\n")
             break
 
         else:
-            print("\n   ⚠️  Galat choice! 1 se 7 ke beech daalo.")
+            print("\n   ⚠️  Invalid choice! Please enter a number between 1 and 7.")
 
 
 # Entry Point
+# This block runs only when the file is executed directly
+# (not when imported as a module)
 if __name__ == "__main__":
     main()
